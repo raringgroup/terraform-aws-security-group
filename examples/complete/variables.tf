@@ -1,4 +1,5 @@
 ## ----------------------------------------------------------------------------
+## Copyright 2021-2022 Cloud Posse, LLC
 ## Copyright 2026 Raring Group LLC
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,9 @@
 ## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
+##
+## Modified from upstream cloudposse/terraform-aws-security-group (2.0.0-rc1) by Raring Group LLC:
+## removed the `region` variable, which is now provided by the Raring Group context module.
 ## ----------------------------------------------------------------------------
 
 variable "rules" {

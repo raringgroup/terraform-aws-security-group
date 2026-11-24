@@ -16,7 +16,7 @@ module "vpc" {
 
   assign_generated_ipv6_cidr_block = true
 
-  context = module.this.context
+  context = module.context.self
 }
 
 resource "random_integer" "coin" {
@@ -36,7 +36,7 @@ module "simple_security_group" {
 
   vpc_id = module.vpc.vpc_id
 
-  context = module.this.context
+  context = module.context.self
 }
 
 # Create a new security group
@@ -115,18 +115,18 @@ module "new_security_group" {
   security_group_create_timeout = "5m"
   security_group_delete_timeout = "2m"
 
-  security_group_name = [format("%s-%s", module.this.id, "new-")]
+  security_group_name = [format("%s-%s", module.context.id, "new-")]
 
-  context = module.this.context
+  context = module.context.self
 }
 
 
 # Create rules for pre-created security group
 
 resource "aws_security_group" "target" {
-  name_prefix = format("%s-%s-", module.this.id, "existing")
+  name_prefix = format("%s-%s-", module.context.id, "existing")
   vpc_id      = module.vpc.vpc_id
-  tags        = module.this.tags
+  tags        = module.context.tags
 }
 
 module "target_security_group" {
@@ -140,7 +140,7 @@ module "target_security_group" {
   security_group_name = [aws_security_group.target.name_prefix]
   vpc_id              = module.vpc.vpc_id
 
-  context = module.this.context
+  context = module.context.self
 }
 
 # Disabled module
@@ -152,6 +152,6 @@ module "disabled_security_group" {
   target_security_group_id = [aws_security_group.target.id]
   rules                    = var.rules
 
-  context = module.this.context
+  context = module.context.self
   enabled = false
 }

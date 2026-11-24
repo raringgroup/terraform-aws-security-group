@@ -1,7 +1,3 @@
-variable "region" {
-  type = string
-}
-
 variable "rules" {
   type        = any
   description = "List of security group rules to apply to the created security group"

@@ -30,22 +30,13 @@ copyrights:
     year: "2021-2022"
 
 # Canonical GitHub repo
-github_repo: cloudposse/terraform-aws-security-group
-
-# Badges to display
-badges:
-  - name: "Latest Release"
-    image: "https://img.shields.io/github/release/cloudposse/terraform-aws-security-group.svg"
-    url: "https://github.com/cloudposse/terraform-aws-security-group"
-  - name: "Slack Community"
-    image: "https://slack.cloudposse.com/badge.svg"
-    url: "https://slack.cloudposse.com"
+github_repo: RaringGroup/terraform-aws-security-group
 
 # List any related terraform modules that this module may be used with or that this module depends on.
 related:
-  - name: "terraform-null-label"
-    description: "Terraform module designed to generate consistent names and tags for resources. Use terraform-null-label to implement a strict naming convention."
-    url: "https://github.com/cloudposse/terraform-null-label"
+  - name: "terraform-null-context"
+    description: "Terraform module designed to generate consistent names and tags for resources. Use terraform-null-context to implement a strict naming convention."
+    url: "https://github.com/raringgroup/terraform-null-context"
 
 # List any resources helpful for someone to get started. For example, link to the hashicorp documentation or AWS documentation.
 references:
@@ -63,6 +54,21 @@ description: |-
 
 # How to use this module. Should be an easy example to copy and paste.
 usage: |-
+  ```hcl
+  module "security_group" {
+    source = "git::https://github.com/raringgroup/terraform-aws-security-group.git?ref=v0.1.0"
+
+    context = module.context.self
+
+    vpc_id = var.vpc_id
+    rules  = var.rules
+  }
+  ```
+
+  Naming and tagging come from [`terraform-null-context`](https://github.com/raringgroup/terraform-null-context). Add `_context.tf` to the calling configuration and pass `context = module.context.self`.
+
+  See [`examples/`](examples/) for complete, runnable configurations.
+
   This module is primarily for setting security group rules on a security group. You can provide the
   ID of an existing security group to modify, or, by default, this module will create a new security
   group and apply the given rules to it.
@@ -492,14 +498,12 @@ usage: |-
 # Example usage
 examples: |-
 
-  See [examples/complete/main.tf](https://github.com/cloudposse/terraform-aws-security-group/examples/complete/main.tf) for
+  See [examples/complete/main.tf](examples/complete/main.tf) for
   even more examples.
 
   ```hcl
-  module "label" {
-    source = "cloudposse/label/null"
-    # Cloud Posse recommends pinning every module to a specific version
-    # version = "x.x.x"
+  module "context" {
+    source = "git::https://github.com/raringgroup/terraform-null-context.git?ref=v0.1.0"
     namespace  = "eg"
     stage      = "prod"
     name       = "bastion"
@@ -513,23 +517,20 @@ examples: |-
   }
 
   module "vpc" {
-    source = "cloudposse/vpc/aws"
-    # Cloud Posse recommends pinning every module to a specific version
-    # version = "x.x.x"
-    cidr_block = "10.0.0.0/16"
+    source = "git::https://github.com/raringgroup/terraform-aws-vpc.git?ref=v0.1.1"
 
-    context = module.label.context
+    ipv4_primary_cidr_block = "10.0.0.0/16"
+
+    context = module.context.self
   }
 
   module "sg" {
-    source = "cloudposse/security-group/aws"
-    # Cloud Posse recommends pinning every module to a specific version
-    # version = "x.x.x"
+    source = "git::https://github.com/raringgroup/terraform-aws-security-group.git?ref=v0.1.0"
 
     # Security Group names must be unique within a VPC.
-    # This module follows Cloud Posse naming conventions and generates the name
-    # based on the inputs to the null-label module, which means you cannot
-    # reuse the label as-is for more than one security group in the VPC.
+    # This module follows the Raring Group naming conventions and generates the name
+    # based on the inputs to the context module, which means you cannot
+    # reuse the context as-is for more than one security group in the VPC.
     #
     # Here we add an attribute to give the security group a unique name.
     attributes = ["primary"]
@@ -562,13 +563,11 @@ examples: |-
 
     vpc_id  = module.vpc.vpc_id
 
-    context = module.label.context
+    context = module.context.self
   }
 
   module "sg_mysql" {
-    source = "cloudposse/security-group/aws"
-    # Cloud Posse recommends pinning every module to a specific version
-    # version = "x.x.x"
+    source = "git::https://github.com/raringgroup/terraform-aws-security-group.git?ref=v0.1.0"
 
     # Add an attribute to give the Security Group a unique name
     attributes = ["mysql"]
@@ -596,7 +595,7 @@ examples: |-
 
     vpc_id  = module.vpc.vpc_id
 
-    context = module.label.context
+    context = module.context.self
   }
 
   ```
@@ -610,16 +609,3 @@ examples: |-
 include:
   - "docs/targets.md"
   - "docs/terraform.md"
-
-# Contributors to this project
-contributors:
-  - name: "Erik Osterman"
-    github: "osterman"
-  - name: "Nuru"
-    github: "Nuru"
-  - name: "Vladimir"
-    github: "SweetOps"
-  - name: "RB"
-    github: "nitrocode"
-  - name: "Andriy Knysh"
-    github: "aknysh"
